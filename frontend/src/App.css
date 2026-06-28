@@ -1,0 +1,33 @@
+/* Code blocks gradient backgrounds */
+.codeblock1 {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.1));
+  border-radius: 100%;
+  width: 300px;
+  height: 300px;
+  filter: blur(80px);
+  top: -20%;
+  left: -10%;
+}
+
+.codeblock2 {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.1));
+  border-radius: 100%;
+  width: 300px;
+  height: 300px;
+  filter: blur(80px);
+  top: -20%;
+  right: -10%;
+}
+
+.homepage_bg {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+}
+
+/* Swiper custom styles */
+.swiper-pagination-bullet {
+  background: #6366f1 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #4f46e5 !important;
+}
