@@ -36,10 +36,9 @@ export default function SessionExpiryWarning() {
         localStorage.setItem("token", JSON.stringify(res.data.token))
       }
     } catch (e) {
-      // token already expired, force logout
-      handleLogout()
+      console.log("Token refresh failed, continuing with current token")
     }
-  }, [token, dispatch, handleLogout])
+  }, [token, dispatch])
 
   const resetTimer = useCallback(() => {
     lastActivityRef.current = Date.now()

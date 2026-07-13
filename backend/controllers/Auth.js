@@ -157,13 +157,14 @@ exports.login = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if(isMatch){
-            let token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1h'});
+            let token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '24h'});
             // user.token = token;
             // user.password = undefined; // to not send password in response
             res.cookie("token", token, {
-                expires: new Date(Date.now() + 3600000), // 1 hour
+                expires: new Date(Date.now() + 24 * 3600000), // 24 hours
                 httpOnly: true,
-                sameSite: "strict"
+                secure: process.env.NODE_ENV === "production",
+                sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
             }).status(200).json({
                 success: true,
                 message: "User logged in successfully",
@@ -274,12 +275,13 @@ exports.refreshToken = async (req, res) => {
 
     // Issue new token with same payload
     const payload = { id: decode.id, email: decode.email, accountType: decode.accountType }
-    const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" })
+    const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" })
 
     res.cookie("token", newToken, {
-      expires: new Date(Date.now() + 3600000),
+      expires: new Date(Date.now() + 24 * 3600000),
       httpOnly: true,
-      sameSite: "strict"
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
     }).status(200).json({
       success: true,
       token: newToken,
