@@ -6,17 +6,19 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
         if (error.response?.status === 401) {
-            // Skip logout for refresh-token calls (handled separately)
             const requestUrl = error.config?.url || ""
+            
+            // Skip logout for refresh-token calls (handled separately)
             if (requestUrl.includes("refresh-token")) {
                 return Promise.reject(error)
             }
 
-            // Only force logout if token exists but is invalid (truly expired)
+            // Only force logout if token is truly invalid (not network/timeout issues)
             const token = localStorage.getItem("token")
-            if (token) {
+            const message = error.response?.data?.message || ""
+            if (token && (message.includes("token is invalid") || message.includes("Token Missing"))) {
                 localStorage.removeItem("token")
                 localStorage.removeItem("user")
                 const path = window.location.pathname

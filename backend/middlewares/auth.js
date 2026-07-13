@@ -11,7 +11,7 @@ exports.auth = async (req, res, next) => {
 		const token =
 			req.cookies.token ||
 			req.body.token ||
-			req.header("Authorization").replace("Bearer ", "");
+			(req.header("Authorization") ? req.header("Authorization").replace("Bearer ", "") : null);
 
 		if (!token) {
 			return res.status(401).json({ success: false, message: `Token Missing` });
