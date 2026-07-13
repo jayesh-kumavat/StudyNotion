@@ -1,6 +1,6 @@
 const Course = require("../models/Course")
 const User = require("../models/User")
-const RatingAndReview = require("../models/RatingAndRaview")
+const RatingAndReview = require("../models/RatingAndReview")
 const CourseProgress = require("../models/CourseProgress")
 
 // personalized recommendations based on user's enrolled course tags

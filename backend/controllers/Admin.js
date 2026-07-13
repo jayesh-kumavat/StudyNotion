@@ -2,7 +2,7 @@ const User = require("../models/User")
 const Course = require("../models/Course")
 const Category = require("../models/Category")
 const CourseProgress = require("../models/CourseProgress")
-const RatingAndReview = require("../models/RatingAndRaview")
+const RatingAndReview = require("../models/RatingAndReview")
 const Profile = require("../models/Profile")
 
 exports.getPlatformStats = async (req, res) => {
