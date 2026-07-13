@@ -8,8 +8,8 @@ const mailSender = async (email, title, body) => {
             // port: 587,
             // secure: false, // true for 465, false for other ports
             auth: {
-                user: process.env.MAIL_USER, // generated ethereal user
-                pass: process.env.MAIL_PASS, // generated ethereal password
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS,
             },
         });
 
