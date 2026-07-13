@@ -127,7 +127,7 @@ function Navbar() {
           )}
 
           {token === null && (
-            <div className="hidden md:flex gap-x-2">
+            <div className="flex gap-x-2">
               <Link to="/login">
                 <motion.button
                   whileHover={{ scale: 1.02 }}

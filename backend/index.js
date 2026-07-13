@@ -42,6 +42,9 @@ app.use(cors({
     credentials: true
 }));
 
+// Handle preflight for all routes
+app.options('*', cors());
+
 app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: '/tmp/'
