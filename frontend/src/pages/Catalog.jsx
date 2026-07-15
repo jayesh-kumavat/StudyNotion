@@ -15,17 +15,20 @@ const Catalog = () => {
   const [active, setActive] = useState(1)
     const [catalogPageData, setCatalogPageData] = useState(null);
     const [categoryId, setCategoryId] = useState("");
+    const [categoryLoading, setCategoryLoading] = useState(true);
 
     //Fetch all categories
     useEffect(()=> {
         const getCategories = async() => {
+            setCategoryLoading(true);
             const res = await apiConnector("GET", categories.CATEGORIES_API);
             const matched = res?.data?.data?.filter((ct) => ct.name.split(" ").join("-").toLowerCase() === catalogName)[0];
             if (!matched) {
                 setCategoryId(null);
-                return;
+            } else {
+                setCategoryId(matched._id);
             }
-            setCategoryId(matched._id);
+            setCategoryLoading(false);
         }
         getCategories();
     },[catalogName]);
@@ -48,14 +51,14 @@ const Catalog = () => {
     },[categoryId]);
 
 
-    if (loading || (!catalogPageData && categoryId)) {
+    if (loading || categoryLoading || (!catalogPageData && categoryId)) {
         return (
           <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
             <div className="spinner"></div>
           </div>
         )
       }
-      if (!categoryId || (!loading && !catalogPageData?.success)) {
+      if (categoryId === null || (!loading && !categoryLoading && !catalogPageData?.success)) {
         return <Error />
       }
     
