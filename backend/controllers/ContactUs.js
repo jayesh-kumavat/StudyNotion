@@ -1,4 +1,4 @@
-const { contactUsEmail } = require("../mail/templates/contactFormRes")
+const { contactUsEmail, adminContactNotificationEmail } = require("../mail/templates/contactFormRes")
 const mailSender = require("../utils/mailSender")
 
 exports.contactUsController = async (req, res) => {
@@ -17,7 +17,7 @@ exports.contactUsController = async (req, res) => {
       await mailSender(
         process.env.ADMIN_EMAIL,
         `New Contact Form Submission from ${firstname} ${lastname}`,
-        contactUsEmail(email, firstname, lastname, message, phoneNo, countrycode)
+        adminContactNotificationEmail(email, firstname, lastname, message, phoneNo, countrycode)
       )
     }
 

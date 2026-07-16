@@ -26,8 +26,8 @@ exports.createCourse = async (req, res) => {
     const thumbnail = req.files?.thumbnailImage
     const thumbnailUrl = req.body.thumbnailUrl
 
-    const tag = JSON.parse(_tag)
-    const instructions = JSON.parse(_instructions)
+    const tag = typeof _tag === "string" ? JSON.parse(_tag) : _tag
+    const instructions = typeof _instructions === "string" ? JSON.parse(_instructions) : _instructions
 
     if (
       !courseName ||
@@ -56,6 +56,13 @@ exports.createCourse = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Instructor Details Not Found",
+      })
+    }
+
+    if (!instructorDetails.approved) {
+      return res.status(403).json({
+        success: false,
+        message: "Your instructor account is pending admin approval. You cannot create courses yet.",
       })
     }
 

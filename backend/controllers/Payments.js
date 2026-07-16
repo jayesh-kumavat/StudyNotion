@@ -6,6 +6,7 @@ const mailSender = require("../utils/mailSender")
 const mongoose = require("mongoose")
 const { courseEnrollmentEmail } = require("../mail/templates/courseEnrollmentEmail")
 const { paymentSuccessEmail } = require("../mail/templates/paymentSuccessEmail")
+const { adminPaymentEmail } = require("../mail/templates/adminNotifications")
 const CourseProgress = require("../models/CourseProgress")
 const UserGamification = require("../models/UserGamification")
 
@@ -187,6 +188,28 @@ exports.sendPaymentSuccessEmail = async (req, res) => {
         paymentId
       )
     )
+
+    // Notify admin of payment
+    if (process.env.ADMIN_EMAIL) {
+      try {
+        const userCourses = await Course.find({ studentsEnrolled: userId }).select("courseName")
+        const courseNames = userCourses.map(c => c.courseName).join(", ") || "N/A"
+        await mailSender(
+          process.env.ADMIN_EMAIL,
+          `New Payment ₹${amount / 100} - ${enrolledStudent.firstName} ${enrolledStudent.lastName}`,
+          adminPaymentEmail(
+            `${enrolledStudent.firstName} ${enrolledStudent.lastName}`,
+            enrolledStudent.email,
+            courseNames,
+            amount / 100,
+            orderId,
+            paymentId
+          )
+        )
+      } catch (err) {
+        console.error("Admin payment notification failed:", err)
+      }
+    }
   } catch (error) {
     console.log("error in sending mail", error)
     return res

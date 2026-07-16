@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
 const { passwordUpdated } = require("../mail/templates/passwordUpdate")
+const { adminNewUserEmail } = require("../mail/templates/adminNotifications")
+const { welcomeEmail } = require("../mail/templates/welcomeEmail")
 const Profile = require("../models/Profile")
 require("dotenv").config()
 
@@ -96,6 +98,30 @@ exports.signup = async (req, res) => {
       image: `https://api.dicebear.com/9.x/initials/svg?seed=${firstName}-${lastName}`
     })
 
+    // Send welcome email to new user
+    try {
+      await mailSender(
+        email,
+        "Welcome to StudyNotion!",
+        welcomeEmail(firstName, lastName, accountType)
+      )
+    } catch (err) {
+      console.error("Welcome email failed:", err)
+    }
+
+    // Notify admin of new user registration
+    if (process.env.ADMIN_EMAIL) {
+      try {
+        await mailSender(
+          process.env.ADMIN_EMAIL,
+          `New ${accountType} Registered - ${firstName} ${lastName}`,
+          adminNewUserEmail(firstName, lastName, email, accountType)
+        )
+      } catch (err) {
+        console.error("Admin notification email failed:", err)
+      }
+    }
+
     return res.status(200).json({
       success: true,
       user,
@@ -157,6 +183,12 @@ exports.login = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if(isMatch){
+            if (!user.active) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Your account has been banned. Please contact support."
+                })
+            }
             let token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '24h'});
             // user.token = token;
             // user.password = undefined; // to not send password in response
@@ -174,6 +206,8 @@ exports.login = async (req, res) => {
                     lastName: user.lastName,
                     email: user.email,
                     accountType: user.accountType,
+                    active: user.active,
+                    approved: user.approved,
                     image: user.image,
                     additionalDetails: user.additionalDetails,
                 },
@@ -326,7 +360,7 @@ exports.changePassword = async (req, res) => {
 
     // Send notification email
     try {
-      const emailResponse = await mailSender(
+      await mailSender(
         updatedUserDetails.email,
         "Password for your account has been updated",
         passwordUpdated(
@@ -334,7 +368,7 @@ exports.changePassword = async (req, res) => {
           `Password updated successfully for ${updatedUserDetails.firstName} ${updatedUserDetails.lastName}`
         )
       )
-      console.log("Email sent successfully:", emailResponse.response)
+
     } catch (error) {
       console.error("Error occurred while sending email:", error)
       return res.status(500).json({

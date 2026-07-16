@@ -4,6 +4,14 @@ const Category = require("../models/Category")
 const CourseProgress = require("../models/CourseProgress")
 const RatingAndReview = require("../models/RatingAndReview")
 const Profile = require("../models/Profile")
+const mailSender = require("../utils/mailSender")
+const {
+  accountBannedEmail,
+  accountUnbannedEmail,
+  accountDeletedEmail,
+  instructorApprovedEmail,
+  instructorRevokedEmail,
+} = require("../mail/templates/adminNotifications")
 
 exports.getPlatformStats = async (req, res) => {
   try {
@@ -66,7 +74,7 @@ exports.getAllUsers = async (req, res) => {
         const search = req.query.search || ""
         const accountType = req.query.accountType || ""
 
-        const query = {}
+        const query = { accountType: { $ne: "Admin" } }
         if (search) {
             query.$or = [
                 { firstName: { $regex: search, $options: "i" } },
@@ -118,9 +126,24 @@ exports.toggleUserStatus = async (req, res) => {
       })
     }
 
+    if (user.accountType === "Admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Cannot ban an admin account",
+      })
+    }
+
     user.active = !user.active
     await user.save()
     console.log(`User ${userId} active: ${user.active}`)
+
+    try {
+      const template = user.active ? accountUnbannedEmail : accountBannedEmail
+      const subject = user.active ? "Your account has been reactivated" : "Your account has been banned"
+      await mailSender(user.email, subject, template(user.firstName, user.lastName))
+    } catch (err) {
+      console.error("Ban/unban email failed:", err)
+    }
 
     return res.status(200).json({
       success: true,
@@ -159,6 +182,16 @@ exports.toggleInstructorApproval = async (req, res) => {
 
         user.approved = !user.approved
         await user.save()
+
+        try {
+            const template = user.approved ? instructorApprovedEmail : instructorRevokedEmail
+            const subject = user.approved
+                ? "Your instructor account has been approved!"
+                : "Your instructor access has been revoked"
+            await mailSender(user.email, subject, template(user.firstName, user.lastName))
+        } catch (err) {
+            console.error("Instructor approval email failed:", err)
+        }
 
         return res.status(200).json({
             success: true,
@@ -302,6 +335,13 @@ exports.deleteUser = async (req, res) => {
             })
         }
 
+        if (user.accountType === "Admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Cannot delete an admin account",
+            })
+        }
+
         // profile delete
         if (user.additionalDetails) {
             await Profile.findByIdAndDelete(user.additionalDetails)
@@ -315,6 +355,17 @@ exports.deleteUser = async (req, res) => {
         }
 
         await CourseProgress.deleteMany({ userId })
+
+        try {
+            await mailSender(
+                user.email,
+                "Your StudyNotion account has been deleted",
+                accountDeletedEmail(user.firstName, user.lastName)
+            )
+        } catch (err) {
+            console.error("Account deletion email failed:", err)
+        }
+
         await User.findByIdAndDelete(userId)
         console.log("admin deleted user:", userId)
 

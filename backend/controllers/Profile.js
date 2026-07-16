@@ -3,12 +3,13 @@ const CourseProgress = require("../models/CourseProgress")
 const UserGamification = require("../models/UserGamification")
 const Wishlist = require("../models/Wishlist")
 const Note = require("../models/Note")
-
 const Course = require("../models/Course")
 const User = require("../models/User")
 const { uploadImageToCloudinary } = require("../utils/imageUploader")
 const mongoose = require("mongoose")
 const { convertSecondsToDuration } = require("../utils/secToDuration")
+const mailSender = require("../utils/mailSender")
+const { accountDeletedEmail, adminUserSelfDeleteEmail } = require("../mail/templates/adminNotifications")
 
 // Method for updating a profile
 exports.updateProfile = async (req, res) => {
@@ -83,7 +84,31 @@ exports.deleteAccount = async (req, res) => {
         { new: true }
       )
     }
-    
+
+    // Send deletion email to user
+    try {
+      await mailSender(
+        user.email,
+        "Your StudyNotion account has been deleted",
+        accountDeletedEmail(user.firstName, user.lastName)
+      )
+    } catch (err) {
+      console.error("User deletion email failed:", err)
+    }
+
+    // Notify admin
+    if (process.env.ADMIN_EMAIL) {
+      try {
+        await mailSender(
+          process.env.ADMIN_EMAIL,
+          `User Account Self-Deleted - ${user.firstName} ${user.lastName}`,
+          adminUserSelfDeleteEmail(user.firstName, user.lastName, user.email, user.accountType)
+        )
+      } catch (err) {
+        console.error("Admin deletion notification failed:", err)
+      }
+    }
+
     await User.findByIdAndDelete({ _id: id })
     res.status(200).json({
       success: true,

@@ -1,7 +1,27 @@
+import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 import RenderSteps from "./RenderSteps"
 
 
 export default function AddCourse() {
+  const { user } = useSelector((state) => state.profile)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user?.accountType === "Instructor" && user?.approved === false) {
+      navigate("/dashboard/my-courses")
+    }
+  }, [user, navigate])
+
+  if (user?.accountType === "Instructor" && user?.approved === false) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
+        <p className="text-2xl font-semibold text-richblack-5">Account Pending Approval</p>
+        <p className="text-richblack-300 max-w-md">Your instructor account is awaiting admin approval. You will receive an email once approved and can start creating courses.</p>
+      </div>
+    )
+  }
   return (
     <>
       <div className="flex w-full items-start gap-x-6">

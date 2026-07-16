@@ -36,6 +36,7 @@ export default function Sidebar() {
         <div className="flex flex-col">
           {sidebarLinks.map((link) => {
             if (link.type && user?.accountType !== link.type) return null
+            if (link.path === "/dashboard/add-course" && user?.accountType === "Instructor" && user?.approved === false) return null
             return (
               <SidebarLink key={link.id} link={link} iconName={link.icon} />
             )

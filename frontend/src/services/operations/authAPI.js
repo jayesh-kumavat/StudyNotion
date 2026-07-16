@@ -87,7 +87,12 @@ export function login(email, password, navigate) {
     } catch (error) {
       console.log("LOGIN API ERROR:", error)
       toast.dismiss(toastId)
-      toast.error("Login Failed")
+      const message = error?.response?.data?.message || ""
+      if (message.includes("banned")) {
+        toast.error("Your account has been banned. Please contact support.")
+      } else {
+        toast.error("Login Failed")
+      }
     }
     dispatch(setLoading(false))
   }

@@ -7,6 +7,12 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
+        if (error.response?.status === 403) {
+            const message = error.response?.data?.message || ""
+            if (message.includes("banned")) {
+                window.location.href = "/banned"
+            }
+        }
         if (error.response?.status === 401) {
             const requestUrl = error.config?.url || ""
             

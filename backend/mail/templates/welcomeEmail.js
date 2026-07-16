@@ -1,12 +1,13 @@
-exports.courseEnrollmentEmail = (courseName, name) => {
+exports.welcomeEmail = (firstName, lastName, accountType) => {
     const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:3000"
     const supportEmail = process.env.MAIL_USER || "info@studynotion.com"
+    const isInstructor = accountType === "Instructor"
     return `<!DOCTYPE html>
     <html>
     
     <head>
         <meta charset="UTF-8">
-        <title>Course Registration Confirmation</title>
+        <title>Welcome to StudyNotion</title>
         <style>
             body {
                 background-color: #ffffff;
@@ -17,7 +18,6 @@ exports.courseEnrollmentEmail = (courseName, name) => {
                 margin: 0;
                 padding: 0;
             }
-    
     
             .container {
                 max-width: 600px;
@@ -71,18 +71,19 @@ exports.courseEnrollmentEmail = (courseName, name) => {
         <div class="container">
             <a href="${frontendUrl}"><img class="logo" src="https://i.ibb.co/7Xyj3PC/logo.png"
                     alt="StudyNotion Logo"></a>
-            <div class="message">Course Registration Confirmation</div>
+            <div class="message">Welcome to StudyNotion! 🎉</div>
             <div class="body">
-                <p>Dear ${name},</p>
-                <p>You have successfully registered for the course <span class="highlight">"${courseName}"</span>. We
-                    are excited to have you as a participant!</p>
-                <p>Please log in to your learning dashboard to access the course materials and start your learning journey.
-                </p>
+                <p>Dear ${firstName} ${lastName},</p>
+                <p>Thank you for joining StudyNotion! Your account has been successfully created.</p>
+                ${isInstructor
+                    ? `<p>Your instructor account is currently <span class="highlight">pending admin approval</span>. You will receive an email once approved and can start creating courses.</p>`
+                    : `<p>You can now browse and enroll in courses, track your progress, and start your learning journey.</p>`
+                }
             </div>
             <div class="support">If you have any questions or need assistance, please feel free to reach out to us at <a
                     href="mailto:${supportEmail}">${supportEmail}</a>. We are here to help!</div>
         </div>
     </body>
     
-    </html>`;
-  };
+    </html>`
+}

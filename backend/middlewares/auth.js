@@ -34,6 +34,15 @@ exports.auth = async (req, res, next) => {
 				.json({ success: false, message: "token is invalid" });
 		}
 
+		// Check if user is banned
+		const userDetails = await User.findById(req.user.id).select("active approved accountType")
+		if (!userDetails) {
+			return res.status(401).json({ success: false, message: "token is invalid" })
+		}
+		if (!userDetails.active) {
+			return res.status(403).json({ success: false, message: "Your account has been banned. Please contact support." })
+		}
+
 		// If JWT is valid, move on to the next middleware or request handler
 		next();
 	} catch (error) {
@@ -42,6 +51,31 @@ exports.auth = async (req, res, next) => {
 			success: false,
 			message: `Something Went Wrong While Validating the Token`,
 		});
+	}
+};
+
+// Auth without active/approved checks — for settings, password change, delete account
+exports.authLite = async (req, res, next) => {
+	try {
+		const token =
+			req.cookies?.token ||
+			req.body?.token ||
+			(req.header("Authorization") ? req.header("Authorization").replace("Bearer ", "") : null);
+
+		if (!token) {
+			return res.status(401).json({ success: false, message: `Token Missing` });
+		}
+
+		try {
+			const decode = await jwt.verify(token, process.env.JWT_SECRET);
+			req.user = decode;
+		} catch (error) {
+			return res.status(401).json({ success: false, message: "token is invalid" });
+		}
+
+		next();
+	} catch (error) {
+		return res.status(401).json({ success: false, message: `Something Went Wrong While Validating the Token` });
 	}
 };
 exports.isStudent = async (req, res, next) => {

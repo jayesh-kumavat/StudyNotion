@@ -16,7 +16,7 @@ const {
   resetPassword,
 } = require("../controllers/ResetPassword");
 
-const { auth } = require("../middlewares/auth");
+const { auth, authLite } = require("../middlewares/auth");
 
 // Route for user login
 router.post("/login", login);
@@ -28,11 +28,11 @@ router.post("/signup", signup);
 router.post("/sendotp", sendotp);
 
 // Route for Changing the password
-router.post("/changepassword", auth, changePassword);
+router.post("/changepassword", authLite, changePassword);
 
-router.post("/logout", auth, logout);
+router.post("/logout", authLite, logout);
 
-router.post("/refresh-token", auth, refreshToken);
+router.post("/refresh-token", authLite, refreshToken);
 
 // ********************************************************************************************************
 //                                      Reset Password

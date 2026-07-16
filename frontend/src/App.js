@@ -1,8 +1,11 @@
 import "./App.css";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
+import { apiConnector } from "./services/apiconnector";
+import { profileEndpoints } from "./services/apis";
+import { setUser } from "./slices/profileSlice";
 
 import Home from "./pages/Home";
 import Navbar from "./components/common/Navbar";
@@ -19,6 +22,7 @@ import MyProfile from "./components/core/Dashboard/MyProfile";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/core/Auth/PrivateRoute";
 import Error from "./pages/Error";
+import BannedAccount from "./pages/BannedAccount";
 import Settings from "./components/core/Dashboard/Settings";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
 import WishlistPage from "./components/core/Dashboard/WishlistPage";
@@ -43,6 +47,28 @@ import CategoryManagement from "./components/core/Dashboard/Admin/CategoryManage
 
 function App() {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+
+  // Fetch fresh active/approved status on app load
+  useEffect(() => {
+    if (!token) return
+    apiConnector("GET", profileEndpoints.GET_USER_DETAILS_API, null, {
+      Authorization: `Bearer ${token}`,
+    }).then((res) => {
+      if (res?.data?.success) {
+        const { active, approved } = res.data.data
+        const storedUser = localStorage.getItem("user")
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser)
+          const updated = { ...parsed, active, approved }
+          dispatch(setUser(updated))
+          localStorage.setItem("user", JSON.stringify(updated))
+        }
+      }
+    }).catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -95,6 +121,7 @@ function App() {
             />
           </Route>
 
+          <Route path="/banned" element={<BannedAccount />} />
           <Route path="*" element={<Error />} />
         </Routes>
       </AnimatePresence>
