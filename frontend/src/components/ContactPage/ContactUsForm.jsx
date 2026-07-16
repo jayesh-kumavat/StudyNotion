@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "react-hot-toast"
 
 import CountryCode from "../../data/countrycode.json"
 import { apiConnector } from "../../services/apiconnector"
@@ -24,9 +25,15 @@ const ContactUsForm = () => {
         data
       )
       // console.log("Email Res - ", res)
+      if (res?.data?.success) {
+        toast.success("Message sent successfully!")
+      } else {
+        toast.error("Something went wrong. Please try again.")
+      }
       setLoading(false)
     } catch (error) {
       console.log("ERROR MESSAGE - ", error.message)
+      toast.error("Failed to send message. Please try again.")
       setLoading(false)
     }
   }

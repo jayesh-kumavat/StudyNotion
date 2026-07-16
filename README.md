@@ -102,7 +102,7 @@ CLOUDINARY_FOLDER_NAME=StudyNotion
 RAZORPAY_KEY_ID=<key-id>
 RAZORPAY_KEY_SECRET=<key-secret>
 CORS_ORIGIN=http://localhost:3000
-SUPPORT_EMAIL=<your-support-email>
+ADMIN_EMAIL=<your-admin-email>
 GROQ_API_KEY=<groq-api-key>
 ```
 

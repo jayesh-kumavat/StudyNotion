@@ -1,6 +1,6 @@
 exports.passwordUpdated = (email, name) => {
 	const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:3000"
-	const supportEmail = process.env.SUPPORT_EMAIL || "info@studynotion.com"
+	const supportEmail = process.env.ADMIN_EMAIL || "info@studynotion.com"
 	return `<!DOCTYPE html>
     <html>
     
