@@ -1,6 +1,6 @@
 # StudyNotion
 
-🔗 **Live Demo:** [https://study-notion-9nec.vercel.app](https://study-notion-9nec.vercel.app)
+🔗 **Live Demo:** <a href="https://study-notion-9nec.vercel.app" target="_blank">https://study-notion-9nec.vercel.app</a>
 
 An ed-tech platform (MERN stack) where instructors can create and sell courses, and students can enroll, watch lectures and track progress.
 
