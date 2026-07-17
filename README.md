@@ -1,5 +1,7 @@
 # StudyNotion
 
+🔗 **Live Demo:** [https://study-notion-9nec.vercel.app](https://study-notion-9nec.vercel.app)
+
 An ed-tech platform (MERN stack) where instructors can create and sell courses, and students can enroll, watch lectures and track progress.
 
 ## What it does
