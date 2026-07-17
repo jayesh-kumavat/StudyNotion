@@ -92,7 +92,7 @@ Create `backend/.env`:
 DATABASE_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/StudyNotion
 PORT=4000
 MAIL_HOST=smtp.gmail.com
-MAIL_USER=<your-email>
+MAIL_USER=<your-support-email>
 MAIL_PASS=<app-password>
 JWT_SECRET=<secret>
 CLOUDINARY_CLOUD_NAME=<cloud-name>
@@ -110,6 +110,7 @@ Create `frontend/.env`:
 ```
 REACT_APP_BASE_URL=http://localhost:4000/api/v1
 REACT_APP_RAZORPAY_KEY=<razorpay-key-id>
+REACT_APP_SUPPORT_EMAIL=<your-support-email>
 ```
 
 Then run:
