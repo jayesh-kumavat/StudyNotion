@@ -82,7 +82,7 @@ exports.getAllUsers = async (req, res) => {
                 { email: { $regex: search, $options: "i" } },
             ]
         }
-        if (accountType) {
+        if (accountType && accountType !== "Admin") {
             query.accountType = accountType
         }
 

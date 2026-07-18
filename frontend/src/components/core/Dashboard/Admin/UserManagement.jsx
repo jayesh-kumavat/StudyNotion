@@ -84,7 +84,6 @@ export default function UserManagement() {
           <option value="">All Roles</option>
           <option value="Student">Students</option>
           <option value="Instructor">Instructors</option>
-          <option value="Admin">Admins</option>
         </select>
       </div>
 
