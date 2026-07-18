@@ -15,7 +15,7 @@ const {
 
 exports.getPlatformStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments()
+    const totalUsers = await User.countDocuments({ accountType: { $ne: "Admin" } })
     const totalStudents = await User.countDocuments({ accountType: "Student" })
     const totalInstructors = await User.countDocuments({ accountType: "Instructor" })
     const totalCourses = await Course.countDocuments()

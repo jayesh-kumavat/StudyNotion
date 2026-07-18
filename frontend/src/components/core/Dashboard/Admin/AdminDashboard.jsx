@@ -86,9 +86,9 @@ export default function AdminDashboard() {
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-richblack-300">Instructor Ratio</span>
                 <span className="text-richblack-5 font-medium">
-                  {stats?.totalUsers
+                  {stats?.totalStudents + stats?.totalInstructors > 0
                     ? Math.round(
-                        (stats.totalInstructors / stats.totalUsers) * 100
+                        (stats.totalInstructors / (stats.totalStudents + stats.totalInstructors)) * 100
                       )
                     : 0}
                   %
@@ -99,8 +99,8 @@ export default function AdminDashboard() {
                   className="h-2 rounded-full bg-blue-400"
                   style={{
                     width: `${
-                      stats?.totalUsers
-                        ? (stats.totalInstructors / stats.totalUsers) * 100
+                      stats?.totalStudents + stats?.totalInstructors > 0
+                        ? (stats.totalInstructors / (stats.totalStudents + stats.totalInstructors)) * 100
                         : 0
                     }%`,
                   }}
