@@ -44,7 +44,6 @@ exports.generateTranscript = async (req, res) => {
     const transcription = await groq.audio.transcriptions.create({
       file: fs.createReadStream(tempFilePath),
       model: "whisper-large-v3",
-      language: "en",
     });
 
     // deleting tmp file
@@ -125,7 +124,6 @@ exports.askLectureAssistant = async (req, res) => {
           const transcription = await groq.audio.transcriptions.create({
             file: fs.createReadStream(tempAudioPath),
             model: "whisper-large-v3",
-            language: "en",
           });
 
           fs.unlinkSync(tempAudioPath);
